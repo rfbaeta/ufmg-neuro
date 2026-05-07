@@ -1,0 +1,5 @@
+Method,Exact Match (%),Within ±1 (%),Within ±2 (%),MAE,Spearman ρ
+Random Forest,75.0,100.0,100.0,0.25,0.9761904761904763
+Best Feature,62.5,75.0,75.0,1.25,0.5000000000000001
+K-Means Clusters,0.0,12.5,50.0,2.875,0.16495721976846453
+PCA Component 1,0.0,12.5,25.0,3.25,-0.14285714285714288

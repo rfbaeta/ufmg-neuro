@@ -1,0 +1,9 @@
+animal,predicted_rank,composite_score,true_rank,absolute_error,features_used,spearman_rho,p_value,mae
+animal_15,1,4.012222121096977,1,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0
+animal_11,2,0.9596561652366966,2,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0
+animal_3,3,0.44438070069094215,3,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0
+animal_13,4,-0.17580867359011976,4,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0
+animal_5,5,-0.8272183331649111,5,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0
+animal_9,6,-1.364117988502663,6,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0
+animal_8,7,-1.4032439966370387,7,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0
+animal_12,8,-1.6458699951298774,8,0,rhythm_ratio_24_over_harm + daily_peak_std + night_frac + num_bouts_night,1.0,0.0,0.0

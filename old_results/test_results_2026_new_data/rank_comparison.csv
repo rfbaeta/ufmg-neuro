@@ -1,0 +1,13 @@
+animal,predicted_rank,true_rank,error
+animal_6,12,1,11
+animal_10,11,2,9
+animal_11,10,3,7
+animal_12,9,4,5
+animal_7,8,5,3
+animal_8,5,6,1
+animal_9,7,7,0
+animal_1,6,8,2
+animal_2,4,9,5
+animal_4,3,10,7
+animal_3,1,11,10
+animal_5,2,12,10

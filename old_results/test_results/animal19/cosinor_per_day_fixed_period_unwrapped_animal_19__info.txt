@@ -1,0 +1,20 @@
+Protocol name: unwrapped_animal_19
+File: ./data/input\data_unwrapped_animal_19.txt
+ZT 0 time: 20
+Cycle types: ['LD']
+Cycle days: [10]
+Test labels: ['1_control_dl']
+Consider first day: True
+Set NaNs: []
+Start date: 2025-05-07T00:00:00.000000
+End date: 2025-05-15T00:00:00.000000
+Sampling interval: 30T
+Sampling frequency: 0.0005555555555555556
+------------------------------------------------------------
+Normalized: False
+Resampled: False
+Filtered: False
+------------------------------------------------------------
+fit_cosinor_fixed_period parameters:
+save_folder: ./test_results/animal19
+save_suffix: 

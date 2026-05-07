@@ -1,0 +1,14 @@
+proxy,rho,kendall_tau,mae,accuracy,mean_abs_dev,max_abs_dev,within_1,within_2,direction_flipped
+Sum top3 sign-aligned z,0.9047619047619048,0.7857142857142856,0.5,0.75,0.5,2.0,0.75,1.0,False
+"Custom sum indices=[0, 1] (median_bout_len, rhythm_ratio_24_over_harm)",0.8333333333333335,0.7142857142857142,0.75,0.625,0.75,3.0,0.75,0.875,False
+Rank product (geom mean) top3,0.8333333333333335,0.6428571428571428,1.0,0.375,1.0,2.0,0.625,1.0,False
+Min-rank top3 (conservative),0.8333333333333335,0.7142857142857142,1.0,0.25,1.0,3.0,0.875,0.875,False
+Best feature (rhythm_ratio_24_over_harm),0.7619047619047621,0.5714285714285714,1.0,0.5,1.0,3.0,0.75,0.75,False
+Mean z across features,0.38095238095238104,0.2857142857142857,2.25,0.125,2.25,4.0,0.25,0.5,False
+Seriation spearman (opt leaf),0.19047619047619052,0.07142857142857142,2.5,0.125,2.5,5.0,0.25,0.5,True
+PC1 projection (unsupervised),0.14285714285714288,0.14285714285714285,2.75,0.125,2.75,4.0,0.125,0.25,True
+Median z across features,0.09523809523809526,0.14285714285714285,2.75,0.125,2.75,5.0,0.125,0.375,False
+L2 norm of z,0.07142857142857144,0.07142857142857142,2.75,0.0,2.75,5.0,0.25,0.5,True
+Seriation euclidean (opt leaf),0.04761904761904763,0.07142857142857142,2.75,0.0,2.75,6.0,0.25,0.5,False
+Trimmed mean z (10-90%),0.04761904761904763,0.14285714285714285,3.0,0.0,3.0,5.0,0.0,0.375,False
+Borda weighted by |rho| (all feats),,,,0.0,,,0.0,0.0,False
