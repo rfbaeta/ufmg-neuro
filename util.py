@@ -48,7 +48,8 @@ def get_data_scaled(all_features, feature_cols, use_scale=True, scaler_type='sta
     scaler = scalers[scaler_type]
     return scaler.fit_transform(X)
 
-       
+
+
 def get_intellicage_start_end_date(file):
     file = open(file, 'r')
     lines = file.readlines()
@@ -64,6 +65,8 @@ def get_intellicage_start_end_date(file):
     num_days = (end_date.date() - start_date.date()).days + 1
     
     return num_days
+       
+
 
 
 # Split animal_3 protocol into per-day dataframes
@@ -79,6 +82,7 @@ def split_animal_protocol_by_day(animals_protocols, animal):
     ks = list(animal_by_day.keys())
     print(f"Animal {animal} Days found:", len(ks))
     return animal_by_day
+
 
 
 def read_data(file, labels_dict, name="", zt_0_time = None, type = 'intellicage'):
@@ -98,19 +102,15 @@ def read_data(file, labels_dict, name="", zt_0_time = None, type = 'intellicage'
 
 
 
-def generate_features(animals_protocols, ranks=None, output_path=None):
+
+
+def generate_features(animals_protocols, output_path=None):
 
 
     animal_features = {}
 
     for animal_number in animals_protocols.keys():
-        if ranks is not None and animal_number not in ranks:
-            continue
 
-        if ranks is not None:
-            rank = ranks[animal_number]
-        else:
-            rank = None
         
         data = animals_protocols[animal_number].data['values']
         
@@ -135,15 +135,12 @@ def generate_features(animals_protocols, ranks=None, output_path=None):
             'activity_kurtosis': float(stats.kurtosis(data.values, fisher=True, bias=False)),
             'gini_coefficient': float(gini),
             'high_activity_frac': high_activity_frac,
-            'actual_rank': rank
         }
         
         animal_features[animal_number] = features
 
     # Convert to DataFrame
     features_df = pd.DataFrame.from_dict(animal_features, orient='index')
-    # if features_df['actual_rank'].notna().any():
-    #features_df = features_df.sort_values('actual_rank')
 
     if output_path is not None:
         print(f"Saving features on {output_path}")
@@ -152,19 +149,12 @@ def generate_features(animals_protocols, ranks=None, output_path=None):
     return features_df
 
 
-def generate_temporal_features(animals_protocols, ranks=None, output_path=None):
+def generate_temporal_features(animals_protocols, output_path=None):
 
     temporal_features = {}
 
     for animal_number in animals_protocols.keys():
-        if ranks is not None and animal_number not in ranks:
-            continue
 
-        if ranks is not None:
-            rank = ranks[animal_number]
-        else:
-            rank = None
-        
         data = animals_protocols[animal_number].data
         values = data['values']
 
@@ -499,7 +489,7 @@ def generate_temporal_features(animals_protocols, ranks=None, output_path=None):
             'night_peak_hour': night_peak_hour,
             'night_activity_per_bout': night_activity_per_bout,
             'night_day_intensity_ratio': night_day_intensity_ratio,
-            'actual_rank': rank
+  
         }
 
         
@@ -531,7 +521,7 @@ def combine_all_features(features_df, temporal_df, output_path):
     return all_features, feature_cols
 
 
-def calculate_correlations(all_features, feature_cols, output_path=None):
+def calculate_correlations(all_features, feature_cols, y, output_path=None):
     
   
     # Calculate correlations with rank
@@ -539,7 +529,7 @@ def calculate_correlations(all_features, feature_cols, output_path=None):
     correlations = {}
 
     for col in feature_cols:
-        corr, pval = stats.spearmanr(all_features[col], all_features['actual_rank'])
+        corr, pval = stats.spearmanr(all_features[col], y)
         correlations[col] = {'correlation': corr, 'p_value': pval}
 
     corr_df = pd.DataFrame.from_dict(correlations, orient='index')
@@ -555,10 +545,14 @@ def calculate_correlations(all_features, feature_cols, output_path=None):
 
 
 
+
+
+
 def build_animal_protocols(
         animals_files, 
         zt_0_time=20, 
-        labels_dict={'cycle_types': ['LD'], 'test_labels': ['1_control_dl'], 'cycle_days': [1]}):
+        labels_dict={'cycle_types': ['LD'], 'test_labels': ['1_control_dl'], 'cycle_days': [1]}, 
+        apply_filtering=True):
 
  
     animals_protocols = {}
@@ -571,8 +565,14 @@ def build_animal_protocols(
             protocol = read_data(v[0], zt_0_time=zt_0_time, labels_dict=labels_dict)
 
             for i in range(1, len(v)):
-                protocol.concat_protocols(read_data(v[i], zt_0_time=zt_0_time, labels_dict=labels_dict), method='sum')
+                try:
+                    protocol.concat_protocols(read_data(v[i], zt_0_time=zt_0_time, labels_dict=labels_dict), method='sum')
+                except Exception as e:
+                    print(f"Error trying to concatenate {v} with {v[i]}: {e}")
             
+            if apply_filtering:
+                protocol.resample('15T', method='sum')
+                protocol.apply_filter(type = 'savgol')
             animals_protocols[f"animal_{k}"] = protocol
             reads.append(k)
         else:

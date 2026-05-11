@@ -242,6 +242,7 @@ def main(data_folder, ranks, gender, output_folder, k=3, best_feat_idx=0, indice
     proxy_rows, proxy_summary = evaluate_proxies(
         proxies_raw, 
         all_features, 
+        y,
         verbose=True,
         output_path=f'{output_folder}/proxy_evaluation_{gender}.csv'
     )

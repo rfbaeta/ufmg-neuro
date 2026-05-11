@@ -250,10 +250,10 @@ def orient_scores(scores, actual_ranks):
     return (-scores if flipped else scores), flipped
 
 
-def compute_feature_rhos(all_features, feature_cols):
+def compute_feature_rhos(all_features, feature_cols, y):
     """Compute Spearman correlation of each feature with actual_rank, sorted by |rho|."""
     rhos = all_features[feature_cols].apply(
-        lambda c: spearmanr(c, all_features['actual_rank']).correlation
+        lambda c: spearmanr(c, y).correlation
     )
     return rhos.sort_values(key=np.abs, ascending=False)
 
@@ -283,7 +283,7 @@ def proxy_named_combo(combo_names, all_features=None, feature_cols=None, X_scale
     return label, combo_scores
 
 
-def build_all_proxies(all_features, feature_cols, X_scaled, k=3, best_feat_idx=0, named_combo=None):
+def build_all_proxies(all_features, feature_cols, X_scaled, y, k=3, best_feat_idx=0, named_combo=None):
     """
     Build all unsupervised ranking proxies.
 
@@ -304,21 +304,21 @@ def build_all_proxies(all_features, feature_cols, X_scaled, k=3, best_feat_idx=0
     feature_rhos : pd.Series
     proxies_raw  : dict  {label: scores_array}
     """
-    feature_rhos = compute_feature_rhos(all_features, feature_cols)
+    feature_rhos = compute_feature_rhos(all_features, feature_cols, y)
 
     proxy_list = [
         proxy_best_feature(all_features, feature_cols, feature_rhos, f=best_feat_idx),
-        proxy_topk_sum(all_features, feature_cols, X_scaled, feature_rhos, k=k),
-        proxy_rank_product(all_features, feature_cols, X_scaled, feature_rhos, k=k),
-        proxy_borda_weighted(all_features, feature_cols, X_scaled, feature_rhos),
-        proxy_pc1(X_scaled),
-        proxy_minrank(all_features, feature_cols, X_scaled, feature_rhos, k=k),
-        proxy_seriation_euclidean(X_scaled),
-        proxy_seriation_spearman(X_scaled),
-        proxy_mean_z(X_scaled),
-        proxy_median_z(X_scaled),
-        proxy_trimmed_mean_z(X_scaled),
-        proxy_l2_norm(X_scaled),
+        #proxy_topk_sum(all_features, feature_cols, X_scaled, feature_rhos, k=k),
+        #proxy_rank_product(all_features, feature_cols, X_scaled, feature_rhos, k=k),
+        #proxy_borda_weighted(all_features, feature_cols, X_scaled, feature_rhos),
+        #proxy_pc1(X_scaled),
+        #proxy_minrank(all_features, feature_cols, X_scaled, feature_rhos, k=k),
+        #proxy_seriation_euclidean(X_scaled),
+        #proxy_seriation_spearman(X_scaled),
+        #proxy_mean_z(X_scaled),
+        #proxy_median_z(X_scaled),
+        #proxy_trimmed_mean_z(X_scaled),
+        #proxy_l2_norm(X_scaled),
     ]
 
     if named_combo is not None:
@@ -341,7 +341,7 @@ def build_all_proxies(all_features, feature_cols, X_scaled, k=3, best_feat_idx=0
 # Evaluation loop
 # ---------------------------------------------------------------------------
 
-def evaluate_proxies(proxies_raw, all_features, verbose=True, output_path=None):
+def evaluate_proxies(proxies_raw, all_features, actual_ranks, verbose=True, output_path=None):
     """
     Evaluate all proxies against actual_rank.
 
@@ -352,18 +352,30 @@ def evaluate_proxies(proxies_raw, all_features, verbose=True, output_path=None):
 
     Returns a list of result dicts and a summary DataFrame.
     """
-    actual_ranks = all_features['actual_rank'].values
+    actual_ranks = np.asarray(actual_ranks)
+    if len(actual_ranks) != len(all_features):
+        raise ValueError(
+            f"Length mismatch: got {len(actual_ranks)} actual ranks for {len(all_features)} animals."
+        )
+
+    actual_order_idx = np.argsort(actual_ranks)
     proxy_rows = []
 
     for name, scores in proxies_raw.items():
         scores_oriented, flipped = orient_scores(scores, actual_ranks)
-        print(f"Score {scores} scores oriented {scores_oriented}")
 
         proxy_rank, rho, ktau, mae = eval_ordering(scores_oriented, actual_ranks)
-        ord_idx = np.argsort(scores_oriented)
-        ordered_animals = all_features.iloc[ord_idx]['animal'].tolist()
-        ordered_ranks   = all_features.iloc[ord_idx]['actual_rank'].tolist()
+        ordered_animals = all_features.iloc[actual_order_idx]['animal'].tolist()
+        ordered_ranks = actual_ranks[actual_order_idx].astype(int).tolist()
         metrics = rank_accuracy(actual_ranks, proxy_rank)
+        comparison_df = pd.DataFrame({
+            'animal': all_features['animal'].tolist(),
+            'true_rank': actual_ranks.astype(int),
+            'pred_rank': proxy_rank.astype(int),
+        }).sort_values('true_rank')
+        comparison_df['abs_error'] = (comparison_df['pred_rank'] - comparison_df['true_rank']).abs()
+        predicted_order = comparison_df.sort_values('pred_rank')['animal'].tolist()
+        predicted_ranks_true_order = comparison_df['pred_rank'].astype(int).tolist()
 
         proxy_rows.append({
             'proxy': name,
@@ -379,9 +391,17 @@ def evaluate_proxies(proxies_raw, all_features, verbose=True, output_path=None):
 
         if verbose:
             print(f'\n{name}:')
-            print('  Order:', ordered_animals)
-            print('  Actual ranks:', ordered_ranks)
-            print('  Assigned ordinal ranks:', proxy_rank.astype(int).tolist())
+            print('  Ground-truth order:', ordered_animals)
+            print('  Predicted order   :', predicted_order)
+            print('  Ground-truth ranks:', ordered_ranks)
+            print('  Predicted ranks in true order:', predicted_ranks_true_order)
+            print('  Predicted ranks aligned to DataFrame rows:', proxy_rank.astype(int).tolist())
+            print(f"\n  {'Animal':<12} {'True':>6} {'Pred':>6} {'Error':>6}")
+            print('  ' + '-' * 34)
+            for _, row in comparison_df.iterrows():
+                err = int(row['abs_error'])
+                marker = '✓' if err == 0 else ('~' if err <= 1 else 'x')
+                print(f"  {row['animal']:<12} {int(row['true_rank']):>6} {int(row['pred_rank']):>6} {err:>6}  {marker}")
             n = len(actual_ranks)
             print(f'  Accuracy: {metrics["accuracy"]*100:.1f}%  Within±1: {metrics["within_1"]*100:.1f}%  Within±2: {metrics["within_2"]*100:.1f}%')
 
