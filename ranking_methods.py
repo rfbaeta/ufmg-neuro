@@ -258,8 +258,20 @@ def compute_feature_rhos(all_features, feature_cols, y):
     return rhos.sort_values(key=np.abs, ascending=False)
 
 
+def _get_sign_aligned_combo_matrix(combo_names, feature_cols, X_scaled, feature_rhos):
+    """Return sign-aligned z-score columns for the selected combo features."""
+    combo_columns = []
+    for fname in combo_names:
+        col_idx = feature_cols.index(fname)
+        vals = X_scaled[:, col_idx].copy()
+        if feature_rhos.loc[fname] < 0:
+            vals = -vals
+        combo_columns.append(vals)
+    return np.column_stack(combo_columns)
+
+
 def proxy_named_combo(combo_names, all_features=None, feature_cols=None, X_scaled=None, feature_rhos=None, scores=None):
-    """Named feature combination proxy.
+    """Named feature combination proxy using the sign-aligned sum.
 
     Parameters
     ----------
@@ -272,15 +284,15 @@ def proxy_named_combo(combo_names, all_features=None, feature_cols=None, X_scale
     label = f'Best combo ({" + ".join(combo_names)})'
     if scores is not None:
         return label, np.asarray(scores, dtype=float)
-    # Recompute: sum of sign-aligned z-scores for each named feature
-    combo_scores = np.zeros(len(all_features))
-    for fname in combo_names:
-        col_idx = feature_cols.index(fname)
-        vals = X_scaled[:, col_idx].copy()
-        if feature_rhos.loc[fname] < 0:
-            vals = -vals
-        combo_scores += vals
-    return label, combo_scores
+    combo_matrix = _get_sign_aligned_combo_matrix(combo_names, feature_cols, X_scaled, feature_rhos)
+    return label, combo_matrix.sum(axis=1)
+
+
+def proxy_named_combo_mean(combo_names, feature_cols, X_scaled, feature_rhos):
+    """Named feature combination proxy using the sign-aligned mean."""
+    label = f'Combo sign-aligned mean ({" + ".join(combo_names)})'
+    combo_matrix = _get_sign_aligned_combo_matrix(combo_names, feature_cols, X_scaled, feature_rhos)
+    return label, combo_matrix.mean(axis=1)
 
 
 def build_all_proxies(all_features, feature_cols, X_scaled, y, k=3, best_feat_idx=0, named_combo=None):
@@ -326,12 +338,14 @@ def build_all_proxies(all_features, feature_cols, X_scaled, y, k=3, best_feat_id
         if isinstance(named_combo, (list, tuple)) and len(named_combo) == 2 and isinstance(named_combo[1], np.ndarray):
             combo_names, combo_scores = named_combo
             proxy_list.insert(1, proxy_named_combo(combo_names, scores=combo_scores))
+            proxy_list.insert(2, proxy_named_combo_mean(combo_names, feature_cols, X_scaled, feature_rhos))
         else:
             combo_names = list(named_combo)
             proxy_list.insert(1, proxy_named_combo(
                 combo_names, all_features=all_features, feature_cols=feature_cols,
                 X_scaled=X_scaled, feature_rhos=feature_rhos
             ))
+            proxy_list.insert(2, proxy_named_combo_mean(combo_names, feature_cols, X_scaled, feature_rhos))
 
     proxies_raw = dict(proxy_list)
     return feature_rhos, proxies_raw
@@ -371,11 +385,13 @@ def evaluate_proxies(proxies_raw, all_features, actual_ranks, verbose=True, outp
         comparison_df = pd.DataFrame({
             'animal': all_features['animal'].tolist(),
             'true_rank': actual_ranks.astype(int),
+            'oriented_score': scores_oriented.astype(float),
             'pred_rank': proxy_rank.astype(int),
         }).sort_values('true_rank')
         comparison_df['abs_error'] = (comparison_df['pred_rank'] - comparison_df['true_rank']).abs()
         predicted_order = comparison_df.sort_values('pred_rank')['animal'].tolist()
         predicted_ranks_true_order = comparison_df['pred_rank'].astype(int).tolist()
+        score_rank_df = comparison_df.sort_values('oriented_score')[['animal', 'oriented_score', 'pred_rank', 'true_rank', 'abs_error']]
 
         proxy_rows.append({
             'proxy': name,
@@ -391,11 +407,19 @@ def evaluate_proxies(proxies_raw, all_features, actual_ranks, verbose=True, outp
 
         if verbose:
             print(f'\n{name}:')
+            print('  Predicted ranks are generated with: rankdata(scores_oriented, method="ordinal")')
             print('  Ground-truth order:', ordered_animals)
             print('  Predicted order   :', predicted_order)
             print('  Ground-truth ranks:', ordered_ranks)
             print('  Predicted ranks in true order:', predicted_ranks_true_order)
             print('  Predicted ranks aligned to DataFrame rows:', proxy_rank.astype(int).tolist())
+            print(f"\n  {'Animal':<12} {'Score':>10} {'Pred':>6} {'True':>6} {'Error':>6}")
+            print('  ' + '-' * 48)
+            for _, row in score_rank_df.iterrows():
+                err = int(row['abs_error'])
+                marker = '✓' if err == 0 else ('~' if err <= 1 else 'x')
+                print(f"  {row['animal']:<12} {row['oriented_score']:>10.4f} {int(row['pred_rank']):>6} {int(row['true_rank']):>6} {err:>6}  {marker}")
+
             print(f"\n  {'Animal':<12} {'True':>6} {'Pred':>6} {'Error':>6}")
             print('  ' + '-' * 34)
             for _, row in comparison_df.iterrows():
