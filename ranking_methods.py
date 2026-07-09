@@ -1,9 +1,12 @@
 """
 ranking_methods.py
 ------------------
-Unsupervised ranking proxies for animal dominance estimation.
-All methods are label-free: they use only the feature matrix X_scaled
-and the population structure of the features.
+Ranking proxies for animal dominance estimation.
+
+Some proxies are fully unsupervised and use only `X_scaled`, while others
+use `feature_rhos` to select and sign-align features. Those `feature_rhos`
+must come either from the current labeled dataset (`y`) or from a previously
+saved labeled reference set when running inference on unlabeled data.
 """
 
 import numpy as np
@@ -28,6 +31,9 @@ def eval_ordering(scores, y_true):
     mae = np.mean(np.abs(pred_rank - y_true))
     return pred_rank, rho, ktau, mae
 
+
+import numpy as np
+from scipy.stats import spearmanr
 
 def rank_accuracy(actual_ranks, proxy_ranks):
     """Compare two integer rank arrays and return accuracy metrics.
@@ -258,6 +264,21 @@ def compute_feature_rhos(all_features, feature_cols, y):
     return rhos.sort_values(key=np.abs, ascending=False)
 
 
+def prepare_feature_rhos(feature_rhos, feature_cols):
+    """Validate and normalize externally provided feature_rhos for inference use."""
+    if not isinstance(feature_rhos, pd.Series):
+        feature_rhos = pd.Series(feature_rhos)
+
+    missing_features = [feature for feature in feature_cols if feature not in feature_rhos.index]
+    if missing_features:
+        raise ValueError(
+            "Missing feature_rhos entries for: "
+            + ", ".join(missing_features)
+        )
+
+    return feature_rhos.loc[feature_cols].sort_values(key=np.abs, ascending=False)
+
+
 def _get_sign_aligned_combo_matrix(combo_names, feature_cols, X_scaled, feature_rhos):
     """Return sign-aligned z-score columns for the selected combo features."""
     combo_columns = []
@@ -295,28 +316,43 @@ def proxy_named_combo_mean(combo_names, feature_cols, X_scaled, feature_rhos):
     return label, combo_matrix.mean(axis=1)
 
 
-def build_all_proxies(all_features, feature_cols, X_scaled, y, k=3, best_feat_idx=0, named_combo=None):
+def build_all_proxies(all_features, feature_cols, X_scaled, y=None, k=3, best_feat_idx=0, named_combo=None, feature_rhos=None):
     """
-    Build all unsupervised ranking proxies.
+    Build ranking proxies.
 
     Parameters
     ----------
     all_features : pd.DataFrame
     feature_cols : list[str]
     X_scaled     : np.ndarray  (n_animals × n_features, z-scored)
+    y            : array-like or None
+        Ground-truth ranks for the current dataset. If provided, `feature_rhos`
+        are computed from this dataset.
     k            : int          number of top features for top-k methods
     best_feat_idx: int or str   index or feature name for the single best feature proxy
     named_combo  : list[str] or tuple (combo_names, scores) or None
         list[str]              — feature names only; scores are recomputed internally.
         tuple (names, scores)  — precomputed scores are used directly.
         When provided, adds a 'Best combo (...)' proxy to the results.
+    feature_rhos : pd.Series or None
+        Precomputed feature-to-rank correlations from a labeled reference set.
+        Use this during inference when the current dataset has no labels.
 
     Returns
     -------
     feature_rhos : pd.Series
     proxies_raw  : dict  {label: scores_array}
     """
-    feature_rhos = compute_feature_rhos(all_features, feature_cols, y)
+    if feature_rhos is None:
+        if y is None:
+            raise ValueError(
+                "Provide either `y` to compute feature_rhos on this dataset or "
+                "precomputed `feature_rhos` from a labeled reference set."
+            )
+        feature_rhos = compute_feature_rhos(all_features, feature_cols, y)
+    else:
+        print("Using feature_rhos provided externally (e.g. from a reference dataset).")
+        feature_rhos = prepare_feature_rhos(feature_rhos, feature_cols)
 
     proxy_list = [
         proxy_best_feature(all_features, feature_cols, feature_rhos, f=best_feat_idx),
@@ -372,26 +408,27 @@ def evaluate_proxies(proxies_raw, all_features, actual_ranks, verbose=True, outp
             f"Length mismatch: got {len(actual_ranks)} actual ranks for {len(all_features)} animals."
         )
 
-    actual_order_idx = np.argsort(actual_ranks)
     proxy_rows = []
 
     for name, scores in proxies_raw.items():
         scores_oriented, flipped = orient_scores(scores, actual_ranks)
 
         proxy_rank, rho, ktau, mae = eval_ordering(scores_oriented, actual_ranks)
-        ordered_animals = all_features.iloc[actual_order_idx]['animal'].tolist()
-        ordered_ranks = actual_ranks[actual_order_idx].astype(int).tolist()
         metrics = rank_accuracy(actual_ranks, proxy_rank)
-        comparison_df = pd.DataFrame({
+
+        row_aligned_df = pd.DataFrame({
             'animal': all_features['animal'].tolist(),
             'true_rank': actual_ranks.astype(int),
             'oriented_score': scores_oriented.astype(float),
             'pred_rank': proxy_rank.astype(int),
-        }).sort_values('true_rank')
+        })
+        comparison_df = row_aligned_df.copy()
         comparison_df['abs_error'] = (comparison_df['pred_rank'] - comparison_df['true_rank']).abs()
-        predicted_order = comparison_df.sort_values('pred_rank')['animal'].tolist()
-        predicted_ranks_true_order = comparison_df['pred_rank'].astype(int).tolist()
-        score_rank_df = comparison_df.sort_values('oriented_score')[['animal', 'oriented_score', 'pred_rank', 'true_rank', 'abs_error']]
+        predicted_order = [
+            f"{animal}:{pred_rank}"
+            for animal, pred_rank in zip(row_aligned_df['animal'], row_aligned_df['pred_rank'])
+        ]
+        score_rank_df = comparison_df[['animal', 'oriented_score', 'pred_rank', 'true_rank', 'abs_error']]
 
         proxy_rows.append({
             'proxy': name,
@@ -408,11 +445,20 @@ def evaluate_proxies(proxies_raw, all_features, actual_ranks, verbose=True, outp
         if verbose:
             print(f'\n{name}:')
             print('  Predicted ranks are generated with: rankdata(scores_oriented, method="ordinal")')
-            print('  Ground-truth order:', ordered_animals)
-            print('  Predicted order   :', predicted_order)
-            print('  Ground-truth ranks:', ordered_ranks)
-            print('  Predicted ranks in true order:', predicted_ranks_true_order)
-            print('  Predicted ranks aligned to DataFrame rows:', proxy_rank.astype(int).tolist())
+            print(f'  Metrics: rho={rho:.3f}  tau={ktau:.3f}  mae={metrics["mae"]:.2f}  acc={metrics["accuracy"]*100:.1f}%')
+            print('  Animals in DataFrame row order:', row_aligned_df['animal'].tolist())
+            print('  True ranks aligned to DataFrame rows:', row_aligned_df['true_rank'].astype(int).tolist())
+            print('  Predicted order aligned to DataFrame rows:', predicted_order)
+            print('  Predicted ranks aligned to DataFrame rows:', row_aligned_df['pred_rank'].astype(int).tolist())
+            animal_rank_map = {
+                row['animal']: {
+                    'true_rank': int(row['true_rank']),
+                    'pred_rank': int(row['pred_rank']),
+                    'abs_error': int(row['abs_error']),
+                }
+                for _, row in comparison_df.iterrows()
+            }
+            print('  Animal -> ranks:', animal_rank_map)
             print(f"\n  {'Animal':<12} {'Score':>10} {'Pred':>6} {'True':>6} {'Error':>6}")
             print('  ' + '-' * 48)
             for _, row in score_rank_df.iterrows():

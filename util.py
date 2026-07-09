@@ -264,11 +264,11 @@ def generate_temporal_features(animals_protocols, output_path=None):
         short_bout_frac = float(np.mean(bout_lengths <= 1.0)) if len(bout_lengths) else 0.0
         ibi_mean = float(np.mean(gap_lengths)) if len(gap_lengths) else 0.0
         ibi_median = float(np.median(gap_lengths)) if len(gap_lengths) else 0.0
-        ibi_min = float(np.min(gap_lengths)) if len(gap_lengths) else 0.0
+        #ibi_min = float(np.min(gap_lengths)) if len(gap_lengths) else 0.0
         ibi_max = float(np.max(gap_lengths)) if len(gap_lengths) else 0.0
-        ibi_p25 = float(np.percentile(gap_lengths, 25)) if len(gap_lengths) else 0.0
+        #ibi_p25 = float(np.percentile(gap_lengths, 25)) if len(gap_lengths) else 0.0
         ibi_p75 = float(np.percentile(gap_lengths, 75)) if len(gap_lengths) else 0.0
-        ibi_iqr = ibi_p75 - ibi_p25
+        #ibi_iqr = ibi_p75 - ibi_p25
         ibi_p90 = float(np.percentile(gap_lengths, 90)) if len(gap_lengths) else 0.0
         ibi_skew = float(stats.skew(gap_lengths)) if len(gap_lengths) >= 3 else 0.0
         ibi_kurt = float(stats.kurtosis(gap_lengths, fisher=True, bias=False)) if len(gap_lengths) >= 4 else 0.0
@@ -343,9 +343,9 @@ def generate_temporal_features(animals_protocols, output_path=None):
         hourly_activity_raw = values.groupby(values.index.hour).mean()
         onset_thresh = float(hourly_activity_raw.max() * 0.10)
         onset_hours_idx = hourly_activity_raw[hourly_activity_raw >= onset_thresh].index
-        activity_onset = float(onset_hours_idx.min()) if len(onset_hours_idx) > 0 else 0.0
+        #activity_onset = float(onset_hours_idx.min()) if len(onset_hours_idx) > 0 else 0.0
         activity_offset = float(onset_hours_idx.max()) if len(onset_hours_idx) > 0 else 0.0
-        active_window_len = float(activity_offset - activity_onset) if activity_offset >= activity_onset else 0.0
+        #active_window_len = float(activity_offset - activity_onset) if activity_offset >= activity_onset else 0.0
 
         longest_inactive_run = float(np.max(gap_lengths)) if len(gap_lengths) else 0.0
         longest_active_run   = float(np.max(bout_lengths)) if len(bout_lengths) else 0.0
@@ -437,11 +437,11 @@ def generate_temporal_features(animals_protocols, output_path=None):
             'transitions_per_hour': transitions_per_hour,
             'ibi_mean': ibi_mean,
             'ibi_median': ibi_median,
-            'ibi_min': ibi_min,
+            #'ibi_min': ibi_min,
             'ibi_max': ibi_max,
-            'ibi_p25': ibi_p25,
+            #'ibi_p25': ibi_p25,
             'ibi_p75': ibi_p75,
-            'ibi_iqr': ibi_iqr,
+            #'ibi_iqr': ibi_iqr,
             'ibi_p90': ibi_p90,
             'ibi_skew': ibi_skew,
             'ibi_kurt': ibi_kurt,
@@ -467,9 +467,9 @@ def generate_temporal_features(animals_protocols, output_path=None):
             'relative_amplitude': relative_amplitude,
             'interdaily_stability': interdaily_stability,
             'intradaily_variability': intradaily_variability,
-            'activity_onset': activity_onset,
+            #'activity_onset': activity_onset,
             'activity_offset': activity_offset,
-            'active_window_len': active_window_len,
+            #'active_window_len': active_window_len,
             'longest_inactive_run': longest_inactive_run,
             'longest_active_run': longest_active_run,
             'active_fraction_day': active_fraction_day,

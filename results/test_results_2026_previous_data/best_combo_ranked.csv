@@ -1,0 +1,9 @@
+animal,predicted_rank,composite_score,true_rank,absolute_error,features_used,spearman_rho,p_value,mae
+animal_15,1,2.8467864328509993,1,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
+animal_11,2,1.4158776889080524,2,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
+animal_3,3,1.3849982632029743,3,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
+animal_13,4,0.1560753216368833,4,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
+animal_5,5,-0.2512791594237973,5,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
+animal_9,6,-1.0957936472493235,6,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
+animal_8,7,-1.9863715240881854,7,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
+animal_12,8,-2.470293375837592,8,0,power_24h + short_gap_frac + night_ibi_cv,1.0,0.0,0.0
