@@ -409,12 +409,14 @@ def evaluate_proxies(proxies_raw, all_features, actual_ranks, verbose=True, outp
         )
 
     proxy_rows = []
-
+    results = []
     for name, scores in proxies_raw.items():
         scores_oriented, flipped = orient_scores(scores, actual_ranks)
 
         proxy_rank, rho, ktau, mae = eval_ordering(scores_oriented, actual_ranks)
         metrics = rank_accuracy(actual_ranks, proxy_rank)
+        results.append({
+            'name': name, 'ground': actual_ranks, 'pred': proxy_rank})
 
         row_aligned_df = pd.DataFrame({
             'animal': all_features['animal'].tolist(),
@@ -483,7 +485,7 @@ def evaluate_proxies(proxies_raw, all_features, actual_ranks, verbose=True, outp
         summary_df.to_csv(output_path, index=False)
         print(f'\nProxy summary saved to {output_path}')
 
-    return proxy_rows, summary_df
+    return proxy_rows, summary_df, results
 
 
 def plot_proxy_summary(proxy_rows):

@@ -1,0 +1,4 @@
+proxy,rho,kendall_tau,mae,accuracy,within_1,within_2,max_abs_dev,direction_flipped
+Best combo (power_24h + short_gap_frac + night_ibi_cv),1.0,0.9999999999999998,0.0,1.0,1.0,1.0,0.0,False
+Combo sign-aligned mean (power_24h + short_gap_frac + night_ibi_cv),1.0,0.9999999999999998,0.0,1.0,1.0,1.0,0.0,False
+Best feature (rhythm_ratio_24_over_harm),0.7857142857142858,0.6428571428571428,1.0,0.5,0.625,0.875,3.0,False
