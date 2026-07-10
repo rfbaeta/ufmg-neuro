@@ -1,0 +1,9 @@
+animal,predicted_rank,composite_score,true_rank,absolute_error,features_used,spearman_rho,p_value,mae
+animal_15,1,3.0849958292172595,1,0,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
+animal_11,2,1.9027671419016823,2,0,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
+animal_3,3,1.682859178905051,3,0,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
+animal_13,4,1.489382842744027,4,0,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
+animal_5,5,-0.6390668236330707,5,0,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
+animal_9,6,-1.8742269145005273,6,0,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
+animal_12,7,-1.9854609546963384,8,1,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
+animal_8,8,-3.6612502999380823,7,1,rhythm_ratio_24_over_harm + power_24h + peak_to_mean_ratio + max_median_ratio + cosinor_mesor,0.9762,0.0,0.25
