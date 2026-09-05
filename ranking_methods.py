@@ -66,6 +66,41 @@ def rank_accuracy(actual_ranks, proxy_ranks):
     }
 
 
+def order_by_rank(animal_names, actual_ranks, pred_ranks, by="animal"):
+    """Reindex animals/actual/predicted ranks by numeric animal id or by ground-truth rank.
+
+    Parameters
+    ----------
+    animal_names : list[str]
+    actual_ranks  : array-like of int  (1 = most dominant)
+    pred_ranks    : array-like of int
+    by            : {"animal", "rank"}
+        "animal" — order by numeric animal id (e.g. animal_2 before animal_11).
+        "rank"   — order by ascending ground-truth rank (1 -> N).
+
+    Returns
+    -------
+    animals_sorted      : list[str]  animals ordered per `by`
+    ground_sorted       : np.ndarray  ground-truth ranks reindexed per `by`
+    pred_sorted         : np.ndarray  predicted ranks reindexed per `by`
+    animals_pred_sorted : list[str]  animals ordered by ascending predicted rank
+    """
+    actual_ranks = np.asarray(actual_ranks)
+    pred_ranks = np.asarray(pred_ranks)
+
+    if by == "animal":
+        order = np.argsort([int(name.split("_")[1]) for name in animal_names])
+    elif by == "rank":
+        order = np.argsort(actual_ranks)
+    else:
+        raise ValueError(f"`by` must be 'animal' or 'rank', got {by!r}")
+
+    animals_sorted = [animal_names[i] for i in order]
+    pred_order = np.argsort(pred_ranks)
+    animals_pred_sorted = [animal_names[i] for i in pred_order]
+    return animals_sorted, actual_ranks[order], pred_ranks[order], animals_pred_sorted
+
+
 # ---------------------------------------------------------------------------
 # Individual proxy builders
 # ---------------------------------------------------------------------------

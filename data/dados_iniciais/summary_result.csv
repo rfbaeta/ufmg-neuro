@@ -1,0 +1,4 @@
+,feature,animals,pred,ground,accuracy,within_1,within_2,mae,rho
+0,Best feature (cosinor_amplitude),"['animal_3', 'animal_5', 'animal_8', 'animal_9', 'animal_11', 'animal_12', 'animal_13', 'animal_15']","[5, 3, 8, 7, 2, 6, 4, 1]","[3, 5, 7, 6, 2, 8, 4, 1]",0.375,0.625,1.0,1.0,0.8333333333333335
+1,Best combo (power_24h + high_activity_frac + activity_per_bout),"['animal_3', 'animal_5', 'animal_8', 'animal_9', 'animal_11', 'animal_12', 'animal_13', 'animal_15']","[5, 6, 3, 7, 4, 8, 2, 1]","[3, 5, 7, 6, 2, 8, 4, 1]",0.25,0.5,0.875,1.5,0.6428571428571429
+2,Combo sign-aligned mean (power_24h + high_activity_frac + activity_per_bout),"['animal_3', 'animal_5', 'animal_8', 'animal_9', 'animal_11', 'animal_12', 'animal_13', 'animal_15']","[5, 6, 3, 7, 4, 8, 2, 1]","[3, 5, 7, 6, 2, 8, 4, 1]",0.25,0.5,0.875,1.5,0.6428571428571429

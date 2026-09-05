@@ -6,6 +6,13 @@ from scipy import stats
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, MaxAbsScaler
 
 
+def ranks_to_dict(ranks):
+    """ranks[i] is the rank of animal i+1 (animals are 1-indexed).
+    Returns a dict ordered by rank ascending (rank 1 first)."""
+    pairs = [(animal, rank) for animal, rank in enumerate(ranks, start=1)]
+    pairs.sort(key=lambda x: x[1])
+    return {f"animal {animal}": rank for animal, rank in pairs}
+
 def get_data_scaled(all_features, feature_cols, use_scale=True, scaler_type='standard'):
     """
     Scale feature matrix X.
