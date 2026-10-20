@@ -1,9 +1,123 @@
+import os
+import glob       
 from datetime import datetime
 from circadipy import chrono_reader as chr  
 import pandas as pd
 import numpy as np
 from scipy import stats
+from scipy.stats import rankdata
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, MaxAbsScaler
+from ranking_methods import build_all_proxies, evaluate_proxies, rank_accuracy
+from ranking_methods import rank_accuracy
+
+def read_features_rhos(feature_rhos_path):
+
+    feature_rhos_df = pd.read_csv(feature_rhos_path)
+
+    if {'feature', 'rho'}.issubset(feature_rhos_df.columns):
+        feature_rhos = feature_rhos_df.set_index('feature')['rho']
+    else:
+        raise ValueError(
+            "`feature_rhos_previous.csv` must contain `feature` and `rho` columns. "
+            "Recreate it with: feature_rhos.to_frame('rho').rename_axis('feature').to_csv(...)"
+        )
+    
+    return feature_rhos
+
+
+def extract_data(dataFiles, root_folder):
+
+    for file in dataFiles:
+        zip_folder = file.split("/")[-1]
+        sub_folder = zip_folder.split(".")[0].replace(" ", "_")
+        os.makedirs(os.path.join(root_folder, sub_folder), exist_ok=True)
+        _ = chr.intellicage_unwrapper([file], sub_folder, sampling_interval = '30T')
+
+
+
+def prepare_animals_protocols(root_folder, ranks_ground, apply_filtering=True):
+    
+    individual_files = glob.glob(root_folder + "/**/*.txt", recursive=True)
+    individual_files = [f for f in individual_files if "animal_" in f]
+    animals = [int(k.split("_")[1]) for k in ranks_ground.keys()]
+    animals_files = get_sorted_animals_files(individual_files, animals)
+    animals_protocols, animals_by_day = build_animal_protocols(animals_files, apply_filtering=apply_filtering)
+    
+    return animals_protocols, animals_by_day
+
+
+def get_features(animals_protocols, ranks_ground, output_folder):
+
+    output_path = f'{output_folder}/basic_features.csv'
+    features_df = generate_features(animals_protocols, output_path=output_path)
+
+    output_path = f'{output_folder}/temporal_features.csv'
+    temporal_df = generate_temporal_features(animals_protocols, output_path=output_path)
+
+    output_path = f'{output_folder}/all_features.csv'
+    all_features, feature_cols = combine_all_features(features_df, temporal_df, output_path=output_path)
+
+    X_scaled =  get_data_scaled(all_features, feature_cols)
+    ground = [ranks_ground[animal] for animal in all_features['animal'].tolist()]
+
+    return all_features, feature_cols, X_scaled, ground
+
+
+
+
+def generate_result(
+    all_features, feature_cols, X_scaled, ground, feature_rhos, output_path,
+    combos = [
+        ['rhythm_ratio_24_over_harm'], 
+        ['power_24h'], ['autocorr_12h'], 
+        ['power_12h'], ['cosinor_amplitude'], 
+        ['power_24h', 'high_activity_frac', 'activity_per_bout']
+    ],
+    desired_order = ["ground", "pred", "accuracy", "within_1", "within_2"]   
+):
+
+
+    result = {}
+
+    for named_combo in combos:
+
+        feature_rhos, proxies_raw = build_all_proxies(
+            all_features, feature_cols, X_scaled, None,
+            k=3,
+            named_combo=named_combo,
+            feature_rhos=feature_rhos
+        )
+
+        # for k, v in proxies_raw.items():
+        #     print(f"{k}: {v}")
+
+
+        best_combo_key = f'Best combo ({ " + ".join(named_combo) })'
+        scores = proxies_raw[best_combo_key]
+        pred_rank = rankdata(scores, method='ordinal')
+
+        combo_name = "_".join(named_combo)
+
+
+        if combo_name not in result:
+            ground_str = ",".join(map(str, ground))
+            pred_str = ",".join(map(str, pred_rank.tolist()))
+            summary = {"pred": pred_str, "ground": ground_str}
+            metrics = rank_accuracy(ground, pred_rank)
+            summary.update(metrics)
+
+            result[combo_name] = summary
+
+    
+    df = pd.DataFrame(result).reindex(desired_order)
+    df.insert(0, "metric", df.index)
+    df = df.reset_index(drop=True)
+    df.to_csv(output_path, index=False)
+
+
+
+    
+
 
 
 def ranks_to_dict(ranks):

@@ -58,11 +58,11 @@ def rank_accuracy(actual_ranks, proxy_ranks):
     pred   = np.asarray(proxy_ranks,  dtype=float)
     abs_err = np.abs(pred - actual)
     return {
-        'accuracy': float(np.mean(abs_err == 0)),
-        'within_1': float(np.mean(abs_err <= 1)),
-        'within_2': float(np.mean(abs_err <= 2)),
-        'mae':      float(np.mean(abs_err)),
-        'rho':      float(spearmanr(actual, pred).correlation),
+        'accuracy': f"{round(float(np.mean(abs_err == 0))*100,2)}%",
+        'within_1': f"{round(float(np.mean(abs_err <= 1))*100,2)}%",
+        'within_2': f"{round(float(np.mean(abs_err <= 2))*100,2)}%",
+        #'mae':      float(np.mean(abs_err)),
+        #'rho':      float(spearmanr(actual, pred).correlation),
     }
 
 
@@ -351,7 +351,7 @@ def proxy_named_combo_mean(combo_names, feature_cols, X_scaled, feature_rhos):
     return label, combo_matrix.mean(axis=1)
 
 
-def build_all_proxies(all_features, feature_cols, X_scaled, y=None, k=3, best_feat_idx=0, named_combo=None, feature_rhos=None):
+def build_all_proxies(all_features, feature_cols, X_scaled, y=None, k=3, named_combo=None, feature_rhos=None):
     """
     Build ranking proxies.
 
@@ -389,21 +389,21 @@ def build_all_proxies(all_features, feature_cols, X_scaled, y=None, k=3, best_fe
         print("Using feature_rhos provided externally (e.g. from a reference dataset).")
         feature_rhos = prepare_feature_rhos(feature_rhos, feature_cols)
 
-    proxy_list = [
-        proxy_best_feature(all_features, feature_cols, feature_rhos, f=best_feat_idx),
-        #proxy_topk_sum(all_features, feature_cols, X_scaled, feature_rhos, k=k),
-        #proxy_rank_product(all_features, feature_cols, X_scaled, feature_rhos, k=k),
-        #proxy_borda_weighted(all_features, feature_cols, X_scaled, feature_rhos),
-        #proxy_pc1(X_scaled),
-        #proxy_minrank(all_features, feature_cols, X_scaled, feature_rhos, k=k),
-        #proxy_seriation_euclidean(X_scaled),
-        #proxy_seriation_spearman(X_scaled),
-        #proxy_mean_z(X_scaled),
-        #proxy_median_z(X_scaled),
-        #proxy_trimmed_mean_z(X_scaled),
-        #proxy_l2_norm(X_scaled),
-    ]
-
+    # proxy_list = [
+    #     proxy_best_feature(all_features, feature_cols, feature_rhos, f=best_feat_idx),
+    #     #proxy_topk_sum(all_features, feature_cols, X_scaled, feature_rhos, k=k),
+    #     #proxy_rank_product(all_features, feature_cols, X_scaled, feature_rhos, k=k),
+    #     #proxy_borda_weighted(all_features, feature_cols, X_scaled, feature_rhos),
+    #     #proxy_pc1(X_scaled),
+    #     #proxy_minrank(all_features, feature_cols, X_scaled, feature_rhos, k=k),
+    #     #proxy_seriation_euclidean(X_scaled),
+    #     #proxy_seriation_spearman(X_scaled),
+    #     #proxy_mean_z(X_scaled),
+    #     #proxy_median_z(X_scaled),
+    #     #proxy_trimmed_mean_z(X_scaled),
+    #     #proxy_l2_norm(X_scaled),
+    # ]
+    proxy_list = []
     if named_combo is not None:
         # Accept either a plain list of names, or a (names, scores) tuple
         if isinstance(named_combo, (list, tuple)) and len(named_combo) == 2 and isinstance(named_combo[1], np.ndarray):

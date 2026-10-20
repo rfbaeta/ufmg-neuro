@@ -1,0 +1,61 @@
+animal,true_rank,predicted_rank,composite_score,absolute_error,combo_position,features_used,spearman_rho,p_value,mae
+animal_1,9,9,1.0242158788116547,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_2,8,8,0.7916306001511995,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_3,11,12,3.6612800855816965,1,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_4,10,10,1.4975178352066136,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_5,12,11,1.8493874884847248,1,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_6,1,1,-2.2041619695087875,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_7,5,5,-1.315863776208092,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_8,6,7,0.7818801646159121,1,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_9,7,6,-0.26620678010742505,1,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_10,2,2,-2.157166994751682,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_11,3,3,-2.0344109970370967,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_12,4,4,-1.6281015352386268,0,1,power_24h + high_activity_frac + activity_per_bout,0.986,4.117e-09,0.3333
+animal_1,9,9,1.0925421709364043,0,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_2,8,8,0.9161262123817151,0,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_3,11,12,3.6408777900702995,1,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_4,10,10,1.5043156039156882,0,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_5,12,11,1.932144132513073,1,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_6,1,2,-2.2335515512233584,1,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_7,5,5,-1.2281121076705468,0,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_8,6,7,0.5295399725837939,1,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_9,7,6,-0.20782382639988373,1,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_10,2,1,-2.2782339131244767,1,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_11,3,3,-1.9022299848973971,0,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_12,4,4,-1.7655944990852164,0,2,cosinor_amplitude + high_activity_frac + activity_per_bout,0.979,3.090e-08,0.5
+animal_1,9,9,1.3257272233894182,0,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_2,8,8,1.0931419447289632,0,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_3,11,12,3.9627914301594602,1,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_4,10,10,1.7990291797843772,0,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_5,12,11,2.1508988330624885,1,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_6,1,2,-1.9026506249310238,1,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_7,5,5,-1.0143524316303285,0,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_8,6,7,1.0833915091936759,1,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_9,7,6,0.035304564470338584,1,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_10,2,1,-5.473791785107082,1,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_11,3,3,-1.732899652459333,0,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_12,4,4,-1.326590190660863,0,3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_1,9,9,1.3940535155141678,0,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_2,8,8,1.2176375569594788,0,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_3,11,12,3.9423891346480633,1,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_4,10,10,1.805826948493452,0,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_5,12,11,2.233655477090837,1,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_6,1,2,-1.9320402066455946,1,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_7,5,5,-0.9266007630927832,0,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_8,6,7,0.8310513171615576,1,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_9,7,6,0.0936875181778799,1,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_10,2,1,-5.5948587034798765,1,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_11,3,3,-1.6007186403196334,0,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_12,4,4,-1.4640831545074526,0,4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,0.979,3.090e-08,0.5
+animal_1,9,8,0.49681340683977426,1,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_2,8,9,1.3517512928843782,1,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_3,11,12,4.257112501476896,1,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_4,10,10,1.40917351597738,0,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_5,12,11,3.156141094601452,1,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_6,1,1,-4.050047388363746,0,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_7,5,5,-0.08722548573592348,0,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_8,6,7,0.43925187751441674,1,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_9,7,6,0.1715727084169011,1,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_10,2,2,-3.8846327145933803,0,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_11,3,3,-2.2535098268683242,0,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5
+animal_12,4,4,-1.0064009821498296,0,5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,0.979,3.090e-08,0.5

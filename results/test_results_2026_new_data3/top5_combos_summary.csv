@@ -1,0 +1,6 @@
+combo_position,features_used,k,spearman_rho,p_value,mae,delta_spearman_rho,delta_mae
+1,power_24h + high_activity_frac + activity_per_bout,3,0.986,4.117e-09,0.3333,0.0,0.0
+2,cosinor_amplitude + high_activity_frac + activity_per_bout,3,0.979,3.090e-08,0.5,-0.007,0.1667
+3,power_24h + high_activity_frac + activity_per_bout + night_peak_hour,4,0.979,3.090e-08,0.5,-0.007,0.1667
+4,cosinor_amplitude + high_activity_frac + activity_per_bout + night_peak_hour,4,0.979,3.090e-08,0.5,-0.007,0.1667
+5,activity_kurtosis + peak_to_mean_ratio + night_peak_hour + gini_coefficient + power_8h,5,0.979,3.090e-08,0.5,-0.007,0.1667

@@ -1,0 +1,13 @@
+animal,predicted_rank,composite_score,true_rank,absolute_error,features_used,spearman_rho,p_value,mae
+animal_6,3,-0.8872870209680566,1,2,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_10,1,-1.4143112337679213,2,1,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_11,4,-0.7646543301693097,3,1,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_12,2,-1.264651474552546,4,2,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_7,5,-0.2764725152960287,5,0,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_8,12,1.929116506786794,6,6,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_9,6,-0.20496300789776942,7,1,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_2,9,0.5933942217176918,8,1,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_1,7,-0.11814549234026518,9,2,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_4,8,0.20832569632372747,10,2,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_3,11,1.5239509271044576,11,0,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
+animal_5,10,0.6756977230592224,12,2,rhythm_ratio_24_over_harm,0.7902,2.223e-03,1.6667
